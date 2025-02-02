@@ -18,6 +18,8 @@ class ProyectoViewSet(viewsets.ModelViewSet):
     queryset = Proyecto.objects.all()
     serializer_class = ProyectoSerializer
     permission_classes = [IsAuthenticated]  # Proteger el endpoint
+    def get_queryset(self):
+        return Proyecto.objects.filter(miembros=self.request.user)
 
 class TareaViewSet(viewsets.ModelViewSet):
     queryset = Tarea.objects.all()
