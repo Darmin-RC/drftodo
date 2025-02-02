@@ -14,6 +14,14 @@ class UserDetailView(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
+    def put(self, request):
+        user = request.user
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
 class ProyectoViewSet(viewsets.ModelViewSet):
     queryset = Proyecto.objects.all()
     serializer_class = ProyectoSerializer
@@ -25,6 +33,8 @@ class TareaViewSet(viewsets.ModelViewSet):
     queryset = Tarea.objects.all()
     serializer_class = TareaSerializer
     permission_classes = [IsAuthenticated]  # Proteger el endpoint
+    def get_queryset(self):
+        return Tarea.objects.filter(usuario=self.request.user)
 
 class EtiquetaViewSet(viewsets.ModelViewSet):
     queryset = Etiqueta.objects.all()
@@ -35,3 +45,5 @@ class ComentarioViewSet(viewsets.ModelViewSet):
     queryset = Comentario.objects.all()
     serializer_class = ComentarioSerializer
     permission_classes = [IsAuthenticated]  # Proteger el endpoint
+    def get_queryset(self):
+        return Comentario.objects.filter(usuario=self.request.user)
